@@ -9,5 +9,8 @@
     },
     "editor.codeActionsOnSave": {
         "source.fixAll.biome": "explicit"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
     }
 }
