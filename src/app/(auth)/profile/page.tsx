@@ -1,22 +1,31 @@
-import { ArrowLeft, Key, LinkIcon, Shield, Trash2, User } from "lucide-react";
+import {
+  ArrowLeft,
+  Key,
+  LinkIcon,
+  Loader2Icon,
+  Shield,
+  Trash2,
+  User,
+} from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { type ReactNode, Suspense } from "react";
+import AuthChangePasswordForm from "@/components/auth-change-password-form";
 import AuthProfileUpdateForm from "@/components/auth-profile-update-form";
+import AuthSendPasswordResetButton from "@/components/auth-send-password-reset-button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
 import { SIGN_IN_PATH } from "@/lib/auth/constants";
-// import { AccountDeletion } from "./_components/account-deletion";
-// import { AccountLinking } from "./_components/account-linking";
-// import { ChangePasswordForm } from "./_components/change-password-form";
-// import { PasskeyManagement } from "./_components/passkey-management";
-// import { ProfileUpdateForm } from "./_components/profile-update-form";
-// import { SessionManagement } from "./_components/session-management";
-// import { SetPasswordButton } from "./_components/set-password-button";
-// import { TwoFactorAuth } from "./_components/two-factor-auth";
 
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -88,12 +97,12 @@ export default async function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="security">
-          {/* <LoadingSuspense>
+          <LoadingSuspense>
             <SecurityTab
               email={session.user.email}
               isTwoFactorEnabled={session.user.twoFactorEnabled ?? false}
             />
-          </LoadingSuspense> */}
+          </LoadingSuspense>
         </TabsContent>
 
         <TabsContent value="sessions">
@@ -156,75 +165,79 @@ export default async function ProfilePage() {
 //   );
 // }
 
-// async function SecurityTab({
-//   email,
-//   isTwoFactorEnabled,
-// }: {
-//   email: string;
-//   isTwoFactorEnabled: boolean;
-// }) {
-//   const [passkeys, accounts] = await Promise.all([
-//     auth.api.listPasskeys({ headers: await headers() }),
-//     auth.api.listUserAccounts({ headers: await headers() }),
-//   ]);
+async function SecurityTab({
+  email,
+  isTwoFactorEnabled,
+}: {
+  email: string;
+  isTwoFactorEnabled: boolean;
+}) {
+  const [accounts, passkeys] = await Promise.all([
+    auth.api.listUserAccounts({ headers: await headers() }),
+    // auth.api.listPasskeys({ headers: await headers() }),
+  ]);
 
-//   const hasPasswordAccount = accounts.some(
-//     (a) => a.providerId === "credential",
-//   );
+  const hasPasswordAccount = accounts.some(
+    (a) => a.providerId === "credential",
+  );
 
-//   return (
-//     <div className="space-y-6">
-//       {hasPasswordAccount ? (
-//         <Card>
-//           <CardHeader>
-//             <CardTitle>Change Password</CardTitle>
-//             <CardDescription>
-//               Update your password for improved security.
-//             </CardDescription>
-//           </CardHeader>
-//           <CardContent>{/* <ChangePasswordForm /> */}</CardContent>
-//         </Card>
-//       ) : (
-//         <Card>
-//           <CardHeader>
-//             <CardTitle>Set Password</CardTitle>
-//             <CardDescription>
-//               We will send you a password reset email to set up a password.
-//             </CardDescription>
-//           </CardHeader>
-//           <CardContent>{/* <SetPasswordButton email={email} /> */}</CardContent>
-//         </Card>
-//       )}
-//       {hasPasswordAccount && (
-//         <Card>
-//           <CardHeader className="flex items-center justify-between gap-2">
-//             <CardTitle>Two-Factor Authentication</CardTitle>
-//             <Badge variant={isTwoFactorEnabled ? "default" : "secondary"}>
-//               {isTwoFactorEnabled ? "Enabled" : "Disabled"}
-//             </Badge>
-//           </CardHeader>
-//           <CardContent>
-//             {/* <TwoFactorAuth isEnabled={isTwoFactorEnabled} /> */}
-//           </CardContent>
-//         </Card>
-//       )}
+  return (
+    <div className="space-y-6">
+      {hasPasswordAccount ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Change Password</CardTitle>
+            <CardDescription>
+              Update your password for improved security.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AuthChangePasswordForm />
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Set Password</CardTitle>
+            <CardDescription>
+              We will send you a password reset email to set up a password.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AuthSendPasswordResetButton email={email} />
+          </CardContent>
+        </Card>
+      )}
+      {hasPasswordAccount && (
+        <Card>
+          <CardHeader className="flex items-center justify-between gap-2">
+            <CardTitle>Two-Factor Authentication</CardTitle>
+            <Badge variant={isTwoFactorEnabled ? "default" : "secondary"}>
+              {isTwoFactorEnabled ? "Enabled" : "Disabled"}
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            {/* <TwoFactorAuth isEnabled={isTwoFactorEnabled} /> */}
+          </CardContent>
+        </Card>
+      )}
 
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>Passkeys</CardTitle>
-//         </CardHeader>
-//         <CardContent>
-//           {/* <PasskeyManagement passkeys={passkeys} /> */}
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// }
+      <Card>
+        <CardHeader>
+          <CardTitle>Passkeys</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* <PasskeyManagement passkeys={passkeys} /> */}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
-// function LoadingSuspense({ children }: { children: ReactNode }) {
-//   return (
-//     <Suspense fallback={<Loader2Icon className="size-20 animate-spin" />}>
-//       {children}
-//     </Suspense>
-//   );
-// }
+function LoadingSuspense({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<Loader2Icon className="size-20 animate-spin" />}>
+      {children}
+    </Suspense>
+  );
+}
