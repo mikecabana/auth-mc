@@ -1,4 +1,4 @@
-import SignUpForm from "@/components/signup-form";
+import SignUpForm from "@/components/auth-sign-up-form";
 import AuthSocialButtons from "@/components/social-auth-buttons";
 import {
   Card,

@@ -2,6 +2,7 @@ import { betterAuth, type User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
+// import { admin as adminPlugin } from "better-auth/plugins/admin";
 import { db } from "../db";
 import {
   sendEmailVerificationEmail,
@@ -9,12 +10,22 @@ import {
   sendWelcomeEmail,
 } from "../email";
 import { SIGN_UP_PATH } from "./constants";
+// import { ac, admin, user } from "./permissions";
 
 export const auth = betterAuth({
   user: {
     additionalFields: {
       // add custom user fields here then run `npm run auth:generate` to create the schema
       // then run `npm run db:push`
+    },
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({ user, url, newEmail }) => {
+        await sendEmailVerificationEmail({
+          url,
+          user: { ...user, email: newEmail },
+        });
+      },
     },
   },
   emailAndPassword: {
@@ -48,7 +59,10 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: ["http://localhost:3000"],
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    // adminPlugin({ ac, roles: { admin, user } })
+  ],
   database: drizzleAdapter(db, { provider: "pg" }),
   hooks: {
     after: createAuthMiddleware(async (ctx) => {

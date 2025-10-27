@@ -1,5 +1,5 @@
 import NextLink from "next/link";
-import SignInForm from "@/components/signin-form";
+import AuthSignInForm from "@/components/auth-sign-in-form";
 import AuthSocialButtons from "@/components/social-auth-buttons";
 import {
   Card,
@@ -15,7 +15,7 @@ export default function SignInPage() {
     <Card>
       <CardHeader>Sign In</CardHeader>
       <CardContent>
-        <SignInForm />
+        <AuthSignInForm />
       </CardContent>
 
       <Separator />

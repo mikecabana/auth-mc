@@ -27,7 +27,7 @@ const signinSchema = z.object({
 
 type SignInForm = z.infer<typeof signinSchema>;
 
-export default function SignInForm() {
+export default function AuthSignInForm() {
   const form = useForm({
     resolver: zodResolver(signinSchema),
     defaultValues: {
