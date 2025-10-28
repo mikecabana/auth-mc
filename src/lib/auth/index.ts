@@ -2,15 +2,14 @@ import { betterAuth, type User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-// import { admin as adminPlugin } from "better-auth/plugins/admin";
 import { db } from "../db";
 import {
+  sendDeleteAccountVerification,
   sendEmailVerificationEmail,
   sendPasswordResetEmail,
   sendWelcomeEmail,
 } from "../email";
 import { SIGN_UP_PATH } from "./constants";
-// import { ac, admin, user } from "./permissions";
 
 export const auth = betterAuth({
   user: {
@@ -25,6 +24,12 @@ export const auth = betterAuth({
           url,
           user: { ...user, email: newEmail },
         });
+      },
+    },
+    deleteUser: {
+      enabled: true,
+      sendDeleteAccountVerification: async ({ user, url }) => {
+        await sendDeleteAccountVerification({ user, url });
       },
     },
   },
@@ -59,10 +64,7 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: ["http://localhost:3000"],
-  plugins: [
-    nextCookies(),
-    // adminPlugin({ ac, roles: { admin, user } })
-  ],
+  plugins: [nextCookies()],
   database: drizzleAdapter(db, { provider: "pg" }),
   hooks: {
     after: createAuthMiddleware(async (ctx) => {

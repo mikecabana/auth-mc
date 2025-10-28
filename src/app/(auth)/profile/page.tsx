@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { type ReactNode, Suspense } from "react";
+import AuthAccountDeletion from "@/components/auth-account-deletion";
 import AuthAccountLinking from "@/components/auth-account-linking";
 import AuthChangePasswordForm from "@/components/auth-change-password-form";
 import AuthProfileUpdateForm from "@/components/auth-profile-update-form";
@@ -124,7 +125,9 @@ export default async function ProfilePage() {
             <CardHeader>
               <CardTitle className="text-destructive">Danger Zone</CardTitle>
             </CardHeader>
-            <CardContent>{/* <AccountDeletion /> */}</CardContent>
+            <CardContent>
+              <AuthAccountDeletion />
+            </CardContent>
           </Card>
         </TabsContent>
       </Tabs>

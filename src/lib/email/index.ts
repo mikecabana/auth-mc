@@ -55,3 +55,17 @@ export async function sendWelcomeEmail({ user }: { user: User }) {
     body: `Welcome ${user.name} to AUTH-MC!`,
   });
 }
+
+export async function sendDeleteAccountVerification({
+  user,
+  url,
+}: {
+  user: User;
+  url: string;
+}) {
+  return sendEmail({
+    to: user.email,
+    subject: "[AUTH-MC] Delete your account",
+    body: `We're sorry to see you go. Please confirm your account deletion by clicking here: ${url}`,
+  });
+}
