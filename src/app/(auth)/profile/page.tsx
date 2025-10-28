@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { type ReactNode, Suspense } from "react";
+import AuthAccountLinking from "@/components/auth-account-linking";
 import AuthChangePasswordForm from "@/components/auth-change-password-form";
 import AuthProfileUpdateForm from "@/components/auth-profile-update-form";
 import AuthSendPasswordResetButton from "@/components/auth-send-password-reset-button";
@@ -113,9 +114,9 @@ export default async function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="accounts">
-          {/* <LoadingSuspense>
+          <LoadingSuspense>
             <LinkedAccountsTab />
-          </LoadingSuspense> */}
+          </LoadingSuspense>
         </TabsContent>
 
         <TabsContent value="danger">
@@ -131,22 +132,22 @@ export default async function ProfilePage() {
   );
 }
 
-// async function LinkedAccountsTab() {
-//   const accounts = await auth.api.listUserAccounts({
-//     headers: await headers(),
-//   });
-//   const nonCredentialAccounts = accounts.filter(
-//     (a) => a.providerId !== "credential",
-//   );
+async function LinkedAccountsTab() {
+  const accounts = await auth.api.listUserAccounts({
+    headers: await headers(),
+  });
+  const nonCredentialAccounts = accounts.filter(
+    (a) => a.providerId !== "credential",
+  );
 
-//   return (
-//     <Card>
-//       <CardContent>
-//         {/* <AccountLinking currentAccounts={nonCredentialAccounts} /> */}
-//       </CardContent>
-//     </Card>
-//   );
-// }
+  return (
+    <Card>
+      <CardContent>
+        <AuthAccountLinking currentAccounts={nonCredentialAccounts} />
+      </CardContent>
+    </Card>
+  );
+}
 
 async function SessionsTab({
   currentSessionToken,
