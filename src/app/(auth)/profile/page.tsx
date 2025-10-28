@@ -15,6 +15,7 @@ import { type ReactNode, Suspense } from "react";
 import AuthChangePasswordForm from "@/components/auth-change-password-form";
 import AuthProfileUpdateForm from "@/components/auth-profile-update-form";
 import AuthSendPasswordResetButton from "@/components/auth-send-password-reset-button";
+import { AuthSessionManagement } from "@/components/auth-session-management";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -106,9 +107,9 @@ export default async function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="sessions">
-          {/* <LoadingSuspense>
+          <LoadingSuspense>
             <SessionsTab currentSessionToken={session.session.token} />
-          </LoadingSuspense> */}
+          </LoadingSuspense>
         </TabsContent>
 
         <TabsContent value="accounts">
@@ -146,24 +147,25 @@ export default async function ProfilePage() {
 //     </Card>
 //   );
 // }
-// async function SessionsTab({
-//   currentSessionToken,
-// }: {
-//   currentSessionToken: string;
-// }) {
-//   const sessions = await auth.api.listSessions({ headers: await headers() });
 
-//   return (
-//     <Card>
-//       <CardContent>
-//         {/* <SessionManagement
-//           sessions={sessions}
-//           currentSessionToken={currentSessionToken}
-//         /> */}
-//       </CardContent>
-//     </Card>
-//   );
-// }
+async function SessionsTab({
+  currentSessionToken,
+}: {
+  currentSessionToken: string;
+}) {
+  const sessions = await auth.api.listSessions({ headers: await headers() });
+
+  return (
+    <Card>
+      <CardContent>
+        <AuthSessionManagement
+          sessions={sessions}
+          currentSessionToken={currentSessionToken}
+        />
+      </CardContent>
+    </Card>
+  );
+}
 
 async function SecurityTab({
   email,
