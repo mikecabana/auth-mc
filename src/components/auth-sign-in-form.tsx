@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { authClient } from "@/lib/auth/client";
+import { AuthPasskeyButton } from "./auth-passkey-button";
 import { Button } from "./ui/button";
 import {
   Form,
@@ -64,48 +65,58 @@ export default function AuthSignInForm() {
   };
 
   return (
-    <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(handleSignin)}>
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="space-y-4">
+      <Form {...form}>
+        <form className="space-y-4" onSubmit={form.handleSubmit(handleSignin)}>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    autoComplete="email webauthn"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex justify-between items-center">
-                <FormLabel>Password</FormLabel>
-                <NextLink
-                  href="/forgot-password"
-                  className="text-sm font-normal underline"
-                >
-                  Forgot password?
-                </NextLink>
-              </div>
-              <FormControl>
-                <PasswordInput {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex justify-between items-center">
+                  <FormLabel>Password</FormLabel>
+                  <NextLink
+                    href="/forgot-password"
+                    className="text-sm font-normal underline"
+                  >
+                    Forgot password?
+                  </NextLink>
+                </div>
+                <FormControl>
+                  <PasswordInput
+                    autoComplete="current-password webauthn"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          <LoadingSwap isLoading={isSubmitting}>Sign In</LoadingSwap>
-        </Button>
-      </form>
-    </Form>
+          <Button type="submit" disabled={isSubmitting} className="w-full">
+            <LoadingSwap isLoading={isSubmitting}>Sign In</LoadingSwap>
+          </Button>
+        </form>
+      </Form>
+      <AuthPasskeyButton />
+    </div>
   );
 }

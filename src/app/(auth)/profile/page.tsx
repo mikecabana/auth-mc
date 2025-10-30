@@ -15,6 +15,7 @@ import { type ReactNode, Suspense } from "react";
 import AuthAccountDeletion from "@/components/auth-account-deletion";
 import AuthAccountLinking from "@/components/auth-account-linking";
 import AuthChangePasswordForm from "@/components/auth-change-password-form";
+import AuthPasskeyManagement from "@/components/auth-passkey-management";
 import AuthProfileUpdateForm from "@/components/auth-profile-update-form";
 import AuthSendPasswordResetButton from "@/components/auth-send-password-reset-button";
 import { AuthSessionManagement } from "@/components/auth-session-management";
@@ -179,9 +180,9 @@ async function SecurityTab({
   email: string;
   isTwoFactorEnabled: boolean;
 }) {
-  const [accounts /*, passkeys */] = await Promise.all([
+  const [accounts, passkeys] = await Promise.all([
     auth.api.listUserAccounts({ headers: await headers() }),
-    // auth.api.listPasskeys({ headers: await headers() }),
+    auth.api.listPasskeys({ headers: await headers() }),
   ]);
 
   const hasPasswordAccount = accounts.some(
@@ -234,7 +235,7 @@ async function SecurityTab({
           <CardTitle>Passkeys</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* <PasskeyManagement passkeys={passkeys} /> */}
+          <AuthPasskeyManagement passkeys={passkeys} />
         </CardContent>
       </Card>
     </div>

@@ -1,6 +1,6 @@
 import NextLink from "next/link";
 import AuthSignInForm from "@/components/auth-sign-in-form";
-import AuthSocialButtons from "@/components/social-auth-buttons";
+import AuthSocialButtons from "@/components/auth-social-buttons";
 import {
   Card,
   CardContent,

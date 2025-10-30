@@ -1,5 +1,5 @@
 import SignUpForm from "@/components/auth-sign-up-form";
-import AuthSocialButtons from "@/components/social-auth-buttons";
+import AuthSocialButtons from "@/components/auth-social-buttons";
 import {
   Card,
   CardContent,

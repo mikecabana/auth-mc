@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { twoFactor } from "better-auth/plugins";
+import { passkey } from "better-auth/plugins/passkey";
 import { db } from "../db";
 import {
   sendDeleteAccountVerification,
@@ -65,7 +66,7 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: ["http://localhost:3000"],
-  plugins: [nextCookies(), twoFactor()],
+  plugins: [nextCookies(), twoFactor(), passkey()],
   database: drizzleAdapter(db, { provider: "pg" }),
   hooks: {
     after: createAuthMiddleware(async (ctx) => {

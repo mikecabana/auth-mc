@@ -10,70 +10,42 @@ import arcjet, {
 } from "@arcjet/next";
 import { toNextJsHandler } from "better-auth/next-js";
 import { auth } from "@/lib/auth";
+import { SIGN_UP_PATH } from "@/lib/auth/constants";
 
 const aj = arcjet({
-  key: process.env.ARCJET_API_KEY!,
+  key: process.env.ARCJET_KEY!,
   characteristics: ["userIdOrIp"],
   rules: [shield({ mode: "LIVE" })],
 });
 
-const botSettings = {
-  mode: "LIVE",
-  allow: ["STRIPE_WEBHOOK"],
-} satisfies BotOptions;
-const restrictiveRateLimitSettings = {
-  mode: "LIVE",
-  max: 10,
-  interval: "10m",
-} satisfies SlidingWindowRateLimitOptions<[]>;
-const laxRateLimitSettings = {
-  mode: "LIVE",
-  max: 60,
-  interval: "1m",
-} satisfies SlidingWindowRateLimitOptions<[]>;
 const emailSettings = {
   mode: "LIVE",
   block: ["DISPOSABLE", "INVALID", "NO_MX_RECORDS"],
 } satisfies EmailOptions;
 
-const authHandlers = toNextJsHandler(auth);
-export const { GET } = authHandlers;
+const botSettings = {
+  mode: "LIVE",
+  allow: ["STRIPE_WEBHOOK"],
+} satisfies BotOptions;
 
-export async function POST(request: Request) {
-  const clonedRequest = request.clone();
-  const decision = await checkArcjet(request);
+const restrictiveRateLimitSettings = {
+  mode: "LIVE",
+  interval: "10m",
+  max: 10,
+} satisfies SlidingWindowRateLimitOptions<[]>;
 
-  if (decision.isDenied()) {
-    if (decision.reason.isRateLimit()) {
-      return new Response(null, { status: 429 });
-    } else if (decision.reason.isEmail()) {
-      let message: string;
-
-      if (decision.reason.emailTypes.includes("INVALID")) {
-        message = "Email address format is invalid.";
-      } else if (decision.reason.emailTypes.includes("DISPOSABLE")) {
-        message = "Disposable email addresses are not allowed.";
-      } else if (decision.reason.emailTypes.includes("NO_MX_RECORDS")) {
-        message = "Email domain is not valid.";
-      } else {
-        message = "Invalid email.";
-      }
-
-      return Response.json({ message }, { status: 400 });
-    } else {
-      return new Response(null, { status: 403 });
-    }
-  }
-
-  return authHandlers.POST(clonedRequest);
-}
+const laxRateLimitSettings = {
+  mode: "LIVE",
+  interval: "1m",
+  max: 60,
+} satisfies SlidingWindowRateLimitOptions<[]>;
 
 async function checkArcjet(request: Request) {
-  const body = (await request.json()) as unknown;
   const session = await auth.api.getSession({ headers: request.headers });
   const userIdOrIp = (session?.user.id ?? findIp(request)) || "127.0.0.1";
 
-  if (request.url.endsWith("/auth/sign-up")) {
+  if (request.url.endsWith(SIGN_UP_PATH)) {
+    const body = await request.clone().json();
     if (
       body &&
       typeof body === "object" &&
@@ -102,3 +74,35 @@ async function checkArcjet(request: Request) {
     .withRule(slidingWindow(laxRateLimitSettings))
     .protect(request, { userIdOrIp });
 }
+
+const authHandlers = toNextJsHandler(auth.handler);
+
+export const { GET } = authHandlers;
+
+export const POST = async (request: Request) => {
+  const decision = await checkArcjet(request);
+
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return new Response(null, { status: 429 });
+    } else if (decision.reason.isEmail()) {
+      let message: string;
+
+      if (decision.reason.emailTypes.includes("INVALID")) {
+        message = "Email address format is invalid. Is there a typo?";
+      } else if (decision.reason.emailTypes.includes("DISPOSABLE")) {
+        message = "Disposable email addresses are not allowed.";
+      } else if (decision.reason.emailTypes.includes("NO_MX_RECORDS")) {
+        message = "Email domain is not valid.";
+      } else {
+        message = "Invalid email.";
+      }
+
+      return Response.json({ message }, { status: 400 });
+    } else {
+      return new Response(null, { status: 403 });
+    }
+  }
+
+  return authHandlers.POST(request);
+};
