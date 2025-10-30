@@ -18,6 +18,7 @@ import AuthChangePasswordForm from "@/components/auth-change-password-form";
 import AuthProfileUpdateForm from "@/components/auth-profile-update-form";
 import AuthSendPasswordResetButton from "@/components/auth-send-password-reset-button";
 import { AuthSessionManagement } from "@/components/auth-session-management";
+import AuthTwoFactorAuthForm from "@/components/auth-two-factor-auth-form";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -60,7 +61,7 @@ export default async function ProfilePage() {
               <h1 className="text-3xl font-bold">
                 {session.user.name || "User Profile"}
               </h1>
-              <Badge>{session.user.role}</Badge>
+              {/* <Badge>{session.user.role}</Badge> */}
             </div>
             <p className="text-muted-foreground">{session.user.email}</p>
           </div>
@@ -178,7 +179,7 @@ async function SecurityTab({
   email: string;
   isTwoFactorEnabled: boolean;
 }) {
-  const [accounts, passkeys] = await Promise.all([
+  const [accounts /*, passkeys */] = await Promise.all([
     auth.api.listUserAccounts({ headers: await headers() }),
     // auth.api.listPasskeys({ headers: await headers() }),
   ]);
@@ -223,7 +224,7 @@ async function SecurityTab({
             </Badge>
           </CardHeader>
           <CardContent>
-            {/* <TwoFactorAuth isEnabled={isTwoFactorEnabled} /> */}
+            <AuthTwoFactorAuthForm isEnabled={isTwoFactorEnabled} />
           </CardContent>
         </Card>
       )}
