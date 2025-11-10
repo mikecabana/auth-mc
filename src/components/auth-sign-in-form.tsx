@@ -49,7 +49,6 @@ export default function AuthSignInForm() {
       },
       {
         onError: (error) => {
-          console.error("Error during sign in:", error);
           if (error.error.code === "EMAIL_NOT_VERIFIED") {
             router.push(
               `/email-verification?email=${encodeURIComponent(data.email)}`,

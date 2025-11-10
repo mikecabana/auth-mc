@@ -6,10 +6,11 @@ import { AuthCreateOrganizationButton } from "@/components/auth-create-organizat
 import { AuthOrganizationSelect } from "@/components/auth-organization-select";
 import { AuthOrganizationTabs } from "@/components/auth-organization-tabs";
 import { auth } from "@/lib/auth";
+import { SIGN_IN_PATH } from "@/lib/auth/constants";
 
 export default async function AuthOrganizationPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (session == null) return redirect("/auth/login");
+  if (session == null) return redirect(SIGN_IN_PATH);
 
   return (
     <div className="container mx-auto my-6 px-4">

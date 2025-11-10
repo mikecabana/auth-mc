@@ -43,7 +43,6 @@ export default function AuthResetPasswordForm({ token }: { token?: string }) {
       },
       {
         onError: (error) => {
-          console.error("Error during password reset:", error);
           toast.error(error.error.message || "Failed to reset password.");
         },
         onSuccess: () => {

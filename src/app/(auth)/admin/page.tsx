@@ -18,11 +18,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { auth } from "@/lib/auth";
+import { SIGN_IN_PATH } from "@/lib/auth/constants";
 
 export default async function AuthAdminPage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  if (session == null) return redirect("/login");
+  if (session == null) return redirect(SIGN_IN_PATH);
   const hasAccess = await auth.api.userHasPermission({
     headers: await headers(),
     body: { permission: { user: ["list"] } },

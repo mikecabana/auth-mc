@@ -49,7 +49,6 @@ export default function AuthSignUpForm() {
       },
       {
         onError: (error) => {
-          console.error("Error during sign up:", error);
           toast.error(error.error.message || "Failed to sign up.");
         },
       },

@@ -43,7 +43,6 @@ export default function AuthForgotPasswordForm() {
       },
       {
         onError: (error) => {
-          console.error("Error during password reset:", error);
           toast.error(
             error.error.message || "Failed to send password reset email.",
           );
