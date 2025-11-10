@@ -1,3 +1,4 @@
+import { stripe } from "@better-auth/stripe";
 import { betterAuth, type User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
@@ -8,7 +9,7 @@ import {
   twoFactor,
 } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db } from "../db";
 import { member } from "../db/schema";
 import {
@@ -18,6 +19,8 @@ import {
   sendPasswordResetEmail,
   sendWelcomeEmail,
 } from "../email";
+import { stripeClient } from "../stripe";
+import { STRIPE_PLANS } from "../stripe/plans";
 import { SIGN_UP_PATH } from "./constants";
 import { ac, admin, user } from "./permissions";
 
@@ -94,6 +97,33 @@ export const auth = betterAuth({
           inviter: inviter.user,
           invitation,
         }),
+    }),
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: STRIPE_PLANS,
+        authorizeReference: async ({ user, referenceId, action }) => {
+          const memberItem = await db.query.member.findFirst({
+            where: and(
+              eq(member.organizationId, referenceId),
+              eq(member.userId, user.id),
+            ),
+          });
+
+          if (
+            action === "upgrade-subscription" ||
+            action === "cancel-subscription" ||
+            action === "restore-subscription"
+          ) {
+            return memberItem?.role === "owner";
+          }
+
+          return memberItem != null;
+        },
+      },
     }),
   ],
   database: drizzleAdapter(db, { provider: "pg" }),

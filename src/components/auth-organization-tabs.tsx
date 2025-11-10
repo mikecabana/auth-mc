@@ -30,7 +30,7 @@ export function AuthOrganizationTabs() {
               </TabsContent>
 
               <TabsContent value="subscriptions">
-                {/* <AuthSubscriptionsTab /> */}
+                <AuthSubscriptionsTab />
               </TabsContent>
             </CardContent>
           </Card>

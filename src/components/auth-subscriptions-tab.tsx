@@ -1,7 +1,7 @@
 "use client";
 
+import type { Subscription } from "@better-auth/stripe";
 import { useEffect, useState } from "react";
-// import { Subscription } from "@better-auth/stripe"
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,12 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth/client";
 
-// import { PLAN_TO_PRICE, STRIPE_PLANS } from "@/lib/auth/stripe"
+import {
+  PLAN_TO_PRICE,
+  STRIPE_PLANS,
+  type StripePlanName,
+} from "@/lib/stripe/plans";
+import { AuthActionButton } from "./auth-action-button";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -115,7 +120,9 @@ export function AuthSubscriptionsTab() {
                   {activeSubscription.priceId && (
                     <Badge variant="secondary">
                       {currencyFormatter.format(
-                        PLAN_TO_PRICE[activeSubscription.plan],
+                        PLAN_TO_PRICE[
+                          activeSubscription.plan as StripePlanName
+                        ],
                       )}
                     </Badge>
                   )}
@@ -132,13 +139,13 @@ export function AuthSubscriptionsTab() {
                   </p>
                 )}
               </div>
-              <BetterAuthActionButton
+              <AuthActionButton
                 variant="outline"
                 action={handleBillingPortal}
                 className="flex items-center gap-2"
               >
                 Billing Portal
-              </BetterAuthActionButton>
+              </AuthActionButton>
             </div>
           </CardContent>
         </Card>
@@ -169,21 +176,21 @@ export function AuthSubscriptionsTab() {
                     Current Plan
                   </Button>
                 ) : (
-                  <BetterAuthActionButton
+                  <AuthActionButton
                     variant="destructive"
                     className="w-full"
                     action={handleCancelSubscription}
                   >
                     Cancel Subscription
-                  </BetterAuthActionButton>
+                  </AuthActionButton>
                 )
               ) : (
-                <BetterAuthActionButton
+                <AuthActionButton
                   action={() => handleSubscriptionChange(plan.name)}
                   className="w-full"
                 >
                   {activeSubscription == null ? "Subscribe" : "Change Plan"}
-                </BetterAuthActionButton>
+                </AuthActionButton>
               )}
             </CardContent>
           </Card>
