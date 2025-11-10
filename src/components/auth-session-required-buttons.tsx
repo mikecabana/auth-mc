@@ -1,6 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { SIGN_IN_PATH } from "@/lib/auth/constants";
 import { AuthActionButton } from "./auth-action-button";
@@ -8,6 +9,19 @@ import { Button } from "./ui/button";
 
 export default function AuthSessionRequiredButtons() {
   const { data: session, isPending: loading } = authClient.useSession();
+  const [hasAdminPermission, setHasAdminPermission] = useState(false);
+
+  useEffect(() => {
+    authClient.admin
+      .hasPermission({
+        permission: {
+          user: ["list"],
+        },
+      })
+      .then(({ data }) => {
+        setHasAdminPermission(data?.success ?? false);
+      });
+  }, []);
 
   if (loading) {
     return null;
@@ -32,11 +46,11 @@ export default function AuthSessionRequiredButtons() {
             {/* <Button asChild size="lg" variant="outline">
               <NextLink href="/organizations">Organizations</NextLink>
             </Button> */}
-            {/* {hasAdminPermission && (
-          <Button variant="outline" asChild size="lg">
-            <NextLink href="/admin">Admin</NextLink>
-          </Button>
-        )} */}
+            {hasAdminPermission && (
+              <Button variant="outline" asChild size="lg">
+                <NextLink href="/admin">Admin</NextLink>
+              </Button>
+            )}
             <AuthActionButton
               size="lg"
               variant="destructive"

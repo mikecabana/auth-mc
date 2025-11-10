@@ -2,7 +2,7 @@ import { betterAuth, type User } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { twoFactor } from "better-auth/plugins";
+import { admin as adminPlugin, twoFactor } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { db } from "../db";
 import {
@@ -12,6 +12,7 @@ import {
   sendWelcomeEmail,
 } from "../email";
 import { SIGN_UP_PATH } from "./constants";
+import { ac, admin, user } from "./permissions";
 
 export const auth = betterAuth({
   user: {
@@ -66,7 +67,18 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: ["http://localhost:3000"],
-  plugins: [nextCookies(), twoFactor(), passkey()],
+  plugins: [
+    nextCookies(),
+    twoFactor(),
+    passkey(),
+    adminPlugin({
+      ac,
+      roles: {
+        admin,
+        user,
+      },
+    }),
+  ],
   database: drizzleAdapter(db, { provider: "pg" }),
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
