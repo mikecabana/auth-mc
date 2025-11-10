@@ -43,9 +43,9 @@ export default function AuthSessionRequiredButtons() {
             <Button asChild size="lg">
               <NextLink href="/profile">Profile</NextLink>
             </Button>
-            {/* <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="outline">
               <NextLink href="/organizations">Organizations</NextLink>
-            </Button> */}
+            </Button>
             {hasAdminPermission && (
               <Button variant="outline" asChild size="lg">
                 <NextLink href="/admin">Admin</NextLink>

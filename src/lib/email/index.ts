@@ -69,3 +69,21 @@ export async function sendDeleteAccountVerification({
     body: `We're sorry to see you go. Please confirm your account deletion by clicking here: ${url}`,
   });
 }
+
+export async function sendOrganizationInviteEmail({
+  email,
+  invitation,
+  inviter,
+  organization,
+}: {
+  email: string;
+  invitation: { id: string };
+  inviter: { name: string };
+  organization: { name: string };
+}) {
+  sendEmail({
+    to: email,
+    subject: `[AUTH-MC] Invitation to join ${organization.name}`,
+    body: `${inviter.name}, you're invited to join ${organization.name}. Click this link to accept/reject the invitation. ${process.env.BETTER_AUTH_URL}/organizations/invites/${invitation.id}`,
+  });
+}
